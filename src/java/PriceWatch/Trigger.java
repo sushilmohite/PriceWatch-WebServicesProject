@@ -18,7 +18,7 @@ public class Trigger {
     private boolean fireTrigger;
 
     public Trigger() {
-        predicates = new HashMap<Integer, Predicate>();
+        predicates = new HashMap<>();
         bitset = new BitSet(5);
         fireTrigger = false;
     }
