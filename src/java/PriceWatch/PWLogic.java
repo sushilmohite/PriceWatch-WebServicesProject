@@ -33,9 +33,11 @@ public class PWLogic {
      *
      * @param predicate
      */
-    public void addTrigger(Predicate predicate) {
+    public void addTrigger(List<Predicate> predicates) {
         Trigger trigger = new Trigger();
-        trigger.setPredicate(predicate);
+        for (Predicate predicate : predicates) {
+            trigger.setPredicate(predicate);
+        }
         triggers.add(trigger);
     }
 
@@ -188,10 +190,10 @@ public class PWLogic {
     }
 
     /*
-    * Updating the bitset for a trigger according as per the latest prices
-    * @param trigger
-    * @return bitset
-    */
+     * Updating the bitset for a trigger according as per the latest prices
+     * @param trigger
+     * @return bitset
+     */
     public BitSet updateTriggerBits(Trigger trigger) {
         BitSet bitset = trigger.getBitSet();
         Predicate predicate;

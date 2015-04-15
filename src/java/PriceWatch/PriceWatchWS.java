@@ -1,12 +1,14 @@
 /**
  * File: PriceWatchWS.java
- * 
+ *
  * This class contains the two operations of Price Watch.
- * 
+ *
  * @author Sushil Mohite, Varun Hegde and Siddesh Pillai
  */
 package PriceWatch;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -31,6 +33,7 @@ public class PriceWatchWS {
 
     /**
      * Retrieves representation of an instance of PriceWatch.PriceWatchWS
+     *
      * @return an instance of java.lang.String
      */
 //    @GET
@@ -39,9 +42,9 @@ public class PriceWatchWS {
 //        //TODO return proper representation object
 //        throw new UnsupportedOperationException();
 //    }
-
     /**
      * PUT method for updating or creating an instance of PriceWatchWS
+     *
      * @param productId
      * @param price
      */
@@ -56,14 +59,30 @@ public class PriceWatchWS {
             pwLogic.evaluate(productInfo);
         }
     }
-    
+
     /**
      *
      */
     @PUT
     @Path("client")
     @Consumes("text/plain")
-    public void subscribe() {
-        
+    public void subscribe(@QueryParam("subscription") String subscription) {
+        List<Predicate> predicates = new ArrayList<>();
+        Predicate predicate = new Predicate();
+        String[] components = subscription.split(",");
+        predicate.setDistance(Integer.parseInt(components[0]));
+        predicate.setLatitude(Double.parseDouble(components[1]));
+        predicate.setLongitude(Double.parseDouble(components[2]));
+        int i = 3;
+        while (true) {
+            if (i >= components.length) {
+                break;
+            }
+            predicate.setProductId(Integer.parseInt(components[i]));
+            predicate.setPriceLow(Double.parseDouble(components[++i]));
+            predicate.setPriceHigh(Double.parseDouble(components[++i]));
+            predicates.add(predicate);
+        }
+        pwLogic.addTrigger(predicates);
     }
 }
