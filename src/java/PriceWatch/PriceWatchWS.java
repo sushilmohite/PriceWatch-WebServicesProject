@@ -47,42 +47,60 @@ public class PriceWatchWS {
      *
      * @param productId
      * @param price
+     * @return 
      */
     @PUT
     @Consumes("text/plain")
-    public void updatePrice(@QueryParam("productID") int productId, @QueryParam("price") double price) {
-        ProductInfo productInfo = new ProductInfo();
-        productInfo.setProductId(productId);
-        productInfo.setPrice(price);
-        pwLogic.setLatestPrice(productInfo.getProductId(), productInfo.getPrice());
-        if (!pwLogic.containers[productInfo.getProductId()].contains(productInfo.getPrice())) {
-            pwLogic.evaluate(productInfo);
+    public boolean updatePrice(@QueryParam("productID") int productId, @QueryParam("price") double price) {
+        try {
+            ProductInfo productInfo = new ProductInfo();
+            productInfo.setProductId(productId);
+            productInfo.setPrice(price);
+            pwLogic.setLatestPrice(productInfo.getProductId(), productInfo.getPrice());
+            if (!pwLogic.containers[productInfo.getProductId()].contains(productInfo.getPrice())) {
+                pwLogic.evaluate(productInfo);
+            }
         }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
-     *
+     * PUT method for updating or creating an instance of PriceWatchWS
+     * 
+     * @param subscription
+     * @return 
      */
     @PUT
     @Path("client")
     @Consumes("text/plain")
-    public void subscribe(@QueryParam("subscription") String subscription) {
-        List<Predicate> predicates = new ArrayList<>();
-        Predicate predicate = new Predicate();
-        String[] components = subscription.split(",");
-        predicate.setDistance(Integer.parseInt(components[0]));
-        predicate.setLatitude(Double.parseDouble(components[1]));
-        predicate.setLongitude(Double.parseDouble(components[2]));
-        int i = 3;
-        while (true) {
-            if (i >= components.length) {
-                break;
+    public boolean subscribe(@QueryParam("subscription") String subscription) {
+        try {
+            List<Predicate> predicates = new ArrayList<>();
+            Predicate predicate = new Predicate();
+            String[] components = subscription.split(",");
+            predicate.setDistance(Integer.parseInt(components[0]));
+            predicate.setLatitude(Double.parseDouble(components[1]));
+            predicate.setLongitude(Double.parseDouble(components[2]));
+            int i = 3;
+            while (true) {
+                if (i >= components.length) {
+                    break;
+                }
+                predicate.setProductId(Integer.parseInt(components[i]));
+                predicate.setPriceLow(Double.parseDouble(components[++i]));
+                predicate.setPriceHigh(Double.parseDouble(components[++i]));
+                predicates.add(predicate);
             }
-            predicate.setProductId(Integer.parseInt(components[i]));
-            predicate.setPriceLow(Double.parseDouble(components[++i]));
-            predicate.setPriceHigh(Double.parseDouble(components[++i]));
-            predicates.add(predicate);
+            pwLogic.addTrigger(predicates);
         }
-        pwLogic.addTrigger(predicates);
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
     }
 }

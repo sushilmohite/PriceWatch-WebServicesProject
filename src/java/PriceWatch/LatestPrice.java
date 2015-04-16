@@ -17,7 +17,7 @@ public class LatestPrice {
     Map<Integer, Double> prices;
 
     public LatestPrice() {
-        prices = new HashMap<Integer, Double>();
+        prices = new HashMap<>();
     }
     public void setPrice(int productID, double price){
         prices.put(productID, price);

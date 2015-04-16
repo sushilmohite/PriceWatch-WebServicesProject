@@ -31,7 +31,7 @@ public class PWLogic {
     /**
      * This method adds a new trigger with a predicate
      *
-     * @param predicate
+     * @param predicates
      */
     public void addTrigger(List<Predicate> predicates) {
         Trigger trigger = new Trigger();
